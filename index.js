@@ -5,6 +5,8 @@ const { PrismaClient } = require('@prisma/client');
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+
 console.log('Environment check:');
 console.log('DATABASE_URL defined:', !!process.env.DATABASE_URL);
 if (process.env.DATABASE_URL) {
@@ -26,6 +28,40 @@ app.get('/cartera', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+app.post('/cartera', async (req, res) => {
+  const { nombre, deuda } = req.body;
+  try {
+    const nuevaCartera = await prisma.cartera.create({
+      data: {
+        nombre,
+        deuda: deuda ? parseFloat(deuda) : null,
+      },
+    });
+    res.status(201).json(nuevaCartera);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al crear el registro' });
+  }
+});
+
+app.put('/cartera/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nombre, deuda } = req.body;
+  try {
+    const carteraActualizada = await prisma.cartera.update({
+      where: { id: parseInt(id) },
+      data: {
+        nombre,
+        deuda: deuda ? parseFloat(deuda) : undefined,
+      },
+    });
+    res.json(carteraActualizada);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al actualizar el registro' });
   }
 });
 
