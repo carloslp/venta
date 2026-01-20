@@ -5,6 +5,14 @@ const { PrismaClient } = require('@prisma/client');
 const app = express();
 const port = 3000;
 
+console.log('Environment check:');
+console.log('DATABASE_URL defined:', !!process.env.DATABASE_URL);
+if (process.env.DATABASE_URL) {
+  console.log('DATABASE_URL length:', process.env.DATABASE_URL.length);
+} else {
+  console.error('CRITICAL: DATABASE_URL is missing!');
+}
+
 const prisma = new PrismaClient();
 
 app.get('/', (req, res) => {
