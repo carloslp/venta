@@ -8,7 +8,7 @@ datasource db {
 }
 
 model cartera {
-  id     Int    @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   nombre String?
-  deuda  Float?
+  deuda  BigInt?
 }

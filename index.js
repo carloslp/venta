@@ -2,6 +2,11 @@ const express = require('express');
 require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 
+// Patch para serializar BigInt en JSON
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+
 const app = express();
 const port = 3000;
 
@@ -37,7 +42,7 @@ app.post('/cartera', async (req, res) => {
     const nuevaCartera = await prisma.cartera.create({
       data: {
         nombre,
-        deuda: deuda ? parseFloat(deuda) : null,
+        deuda: deuda ? BigInt(deuda) : null,
       },
     });
     res.status(201).json(nuevaCartera);
@@ -55,7 +60,7 @@ app.put('/cartera/:id', async (req, res) => {
       where: { id: parseInt(id) },
       data: {
         nombre,
-        deuda: deuda ? parseFloat(deuda) : undefined,
+        deuda: deuda !== undefined ? BigInt(deuda) : undefined,
       },
     });
     res.json(carteraActualizada);
